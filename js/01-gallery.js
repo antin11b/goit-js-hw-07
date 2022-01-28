@@ -22,23 +22,33 @@ function creatGalleryCardMarkup(galleryItems) {
 };
 
 galleryEl.insertAdjacentHTML('beforeend', GalleryItemMarkup);
+
 let modalWindow;
+
+function removeEscListener() {
+    window.removeEventListener('keydown', onEscKeyPress);
+};
 
 function onGalleryClick(evt) {
     evt.preventDefault();
-    if (!evt.target.classList.contains('gallery__image')) {
+    if (evt.target.nodeName !== 'IMG') {
         return;
-    }
-    modalWindow = basicLightbox.create(`
-		<img src="${evt.target.dataset.source}">
-	`)
-    modalWindow.show(window.addEventListener('keydown', onEscKeyPress));
+    };
+    const html = `<img src="${evt.target.dataset.source}">`;
+
+    modalWindow = basicLightbox.create(html, {
+    onClose: removeEscListener
+    });
+    modalWindow.show();
+    window.addEventListener('keydown', onEscKeyPress);
+    
 };
 
 function onEscKeyPress(evt) {
     evt.preventDefault();
     if (evt.code === 'Escape') {
-        modalWindow.close(window.removeEventListener('keydown', onEscKeyPress));
+        modalWindow.close(),
+        removeEscListener();
     }
 };
 
